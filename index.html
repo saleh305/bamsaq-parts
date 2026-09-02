@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تويوتا بامسق | TOYOTA BAMSAQ</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root { 
+            --primary-color: #d32f2f; 
+            --dark-color: #1a1a1a; 
+            --light-color: #f8f9fa; 
+            --border-color: #e0e0e0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: var(--light-color); color: var(--dark-color); line-height: 1.6; }
+        
+        /* Header & Navbar */
+        header { background-color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 1rem 2rem; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
+        
+        /* Hero Section */
+        .hero { background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1200') center/cover; color: #fff; padding: 3rem 2rem; text-align: center; }
+        
+        /* Main Container */
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        
+        /* File Upload Box */
+        .file-upload-box { background: #fff3e0; border: 2px dashed #ff9800; border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+        .file-upload-box input { display: none; }
+        .file-upload-label { background: #ff9800; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; display: inline-block; margin-top: 10px; }
+        .file-upload-label:hover { background: #f57c00; }
+
+        /* Search Section */
+        .search-card { background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .search-title { text-align: center; margin-bottom: 1.5rem; color: var(--dark-color); }
+        .search-box { display: flex; gap: 10px; max-width: 700px; margin: 0 auto; }
+        .search-input { flex: 1; padding: 12px 18px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; outline: none; transition: 0.3s; }
+        .search-input:focus { border-color: var(--primary-color); }
+        .search-btn { padding: 12px 25px; background-color: var(--primary-color); color: #fff; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .search-btn:hover { background-color: #b71c1c; }
+
+        /* Stats & Quick Actions */
+        .db-info { text-align: center; margin-top: 10px; font-size: 0.85rem; color: #666; }
+
+        /* Results Table */
+        .table-responsive { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: none; }
+        table { width: 100%; border-collapse: collapse; text-align: right; }
+        th { background-color: var(--dark-color); color: #fff; padding: 15px; font-weight: 600; }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); }
+        tr:hover { background-color: #f1f1f1; }
+        .badge-number { font-family: monospace; font-size: 1.05rem; font-weight: bold; color: var(--primary-color); background: #ffebee; padding: 3px 8px; border-radius: 4px; }
+        .price-tag { font-weight: bold; color: #2e7d32; }
+        .old-price { text-decoration: line-through; color: #888; font-size: 0.9rem; margin-left: 8px; }
+        .no-results { text-align: center; padding: 2rem; color: #777; font-size: 1.1rem; }
+
+        /* Contact Section & Footer */
+        .contact-info { background: #fff; margin: 2rem auto; padding: 2rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        footer { background: var(--dark-color); color: #fff; padding: 1.5rem 0; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">تويوتا بامسق <span>| TOYOTA BAMSAQ</span></div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>شركة بامسق للتجارة المحدودة</h1>
+        <h2>نظام الاستعلام عن قطع الغيار والأسعار المخفضة</h2>
+    </section>
+
+    <div class="container">
+
+        <!-- رفع ملف Excel تلقائي/يدوي -->
+        <div class="file-upload-box">
+            <h3>📊 تحميل قائمة الأسعار والخصومات</h3>
+            <p>قم برفع ملف Excel الخاص بالتخفيضات (مثال: <code>التخفيضات كامل سعر جديد 01-07-2026.xlsx</code>) للبحث المباشر في كامل قاعدة البيانات (17,000+ قطعة):</p>
+            <label class="file-upload-label" for="excelFileInput">اختر ملف Excel</label>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls" onchange="loadExcelFile(event)">
+        </div>
+
+        <section class="search-card">
+            <h2 class="search-title">ابحث عن قطعة الغيار</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="أدخل رقم القطعة (مثال: 04465-0K240) أو اسمها..." onkeypress="handleKeyPress(event)">
+                <button onclick="executeSearch()" class="search-btn">بحث</button>
+            </div>
+            <div class="db-info" id="dbInfo">جاري تحميل قاعدة البيانات...</div>
+        </section>
+
+        <div class="table-responsive" id="resultsContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم القطعة (Part No.)</th>
+                        <th>النوع</th>
+                        <th>وصف القطعة</th>
+                        <th>الكمية المتاحة</th>
+                        <th>السعر قبل الخصم</th>
+                        <th>السعر بعد الخصم</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <section class="contact-info container">
+        <h2>BAMSAQ Trading Co. Ltd.</h2>
+        <p>المركز الرئيسي: اليمن - حضرموت - المكلا</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 تويوتا بامسق - BAMSAQ Trading Co. Ltd.</p>
+    </footer>
+
+    <script>
+        // قاعدة بيانات افتراضية أولية
+        let partsDB = [
+            { id: "04465-0K240", brand: "تويوتا", name: "قماشات فرامل أمامي (فحمات)", qty: 10, priceBefore: "137,495", priceAfter: "89,372" },
+            { id: "04466-60140", brand: "تويوتا", name: "قماشات فرامل خلفي", qty: 6, priceBefore: "147,779", priceAfter: "73,889" },
+            { id: "90915-YZZD2", brand: "تويوتا", name: "فلتر زيت المحرك (سيفون)", qty: 25, priceBefore: "19,716", priceAfter: "14,787" },
+            { id: "17801-0C010", brand: "تويوتا", name: "فلتر هواء المحرك", qty: 15, priceBefore: "23,259", priceAfter: "11,629" },
+            { id: "H041117C421", brand: "هينو", name: "GASKET KIT, ENGINE", qty: 10, priceBefore: "137,495", priceAfter: "89,372" }
+        ];
+
+        // تحديث إحصائيات القاعدة
+        function updateDbStats() {
+            document.getElementById('dbInfo').innerText = `قاعدة البيانات تحتوي حالياً على ${partsDB.length.toLocaleString('ar-EG')} قطعة غيار مسجلة.`;
+        }
+        updateDbStats();
+
+        // دالة قراءة ملف Excel ديناميكياً
+        function loadExcelFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('dbInfo').innerText = "جاري معالجة وقراءة ملف Excel...";
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const rawJson = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                // تحويل صفوف الإكسل إلى كائنات قاعدة بيانات
+                const loadedData = [];
+                for (let i = 1; i < rawJson.length; i++) {
+                    const row = rawJson[i];
+                    if (!row || !row[1]) continue; // تخطي الصفوف الفارغة أو التي بدون رقم قطعة
+
+                    loadedData.push({
+                        id: String(row[1]).trim(),
+                        brand: row[2] ? String(row[2]).trim() : 'تويوتا',
+                        name: row[3] ? String(row[3]).trim() : '',
+                        qty: row[4] !== undefined ? row[4] : '-',
+                        priceBefore: row[5] ? Number(row[5]).toLocaleString('ar-EG', {maximumFractionDigits:2}) : '-',
+                        priceAfter: row[7] ? Number(row[7]).toLocaleString('ar-EG', {maximumFractionDigits:2}) : '-'
+                    });
+                }
+
+                if (loadedData.length > 0) {
+                    partsDB = loadedData;
+                    updateDbStats();
+                    alert(`تم تحميل ${partsDB.length.toLocaleString('ar-EG')} قطعة غيار بنجاح من ملف Excel!`);
+                } else {
+                    alert('لم يتم العثور على بيانات صالحة في الملف.');
+                    updateDbStats();
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // دالة تنفيذ البحث
+        function executeSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsBody = document.getElementById('resultsBody');
+
+            resultsBody.innerHTML = '';
+
+            if (query === '') {
+                resultsContainer.style.display = 'none';
+                alert('يرجى كتابة رقم القطعة أو اسمها للبحث.');
+                return;
+            }
+
+            // تصفية النتائج
+            const matchedParts = partsDB.filter(part => 
+                part.id.toLowerCase().includes(query) || 
+                part.name.toLowerCase().includes(query) ||
+                part.brand.toLowerCase().includes(query)
+            );
+
+            // حد أقصى للنتائج المعروضة لتفادي بطء الصفحة (أول 100 نتيجة)
+            const displayLimit = 100;
+            const limitedResults = matchedParts.slice(0, displayLimit);
+
+            if (matchedParts.length > 0) {
+                limitedResults.forEach(part => {
+                    const row = `
+                        <tr>
+                            <td><span class="badge-number">${part.id}</span></td>
+                            <td>${part.brand}</td>
+                            <td><strong>${part.name}</strong></td>
+                            <td>${part.qty}</td>
+                            <td><span class="old-price">${part.priceBefore}</span></td>
+                            <td><span class="price-tag">${part.priceAfter}</span></td>
+                        </tr>
+                    `;
+                    resultsBody.innerHTML += row;
+                });
+
+                if (matchedParts.length > displayLimit) {
+                    resultsBody.innerHTML += `
+                        <tr>
+                            <td colspan="6" style="text-align:center; background:#fff3e0; font-weight:bold; padding:10px;">
+                                تم عرض أول ${displayLimit} نتيجة من إجمالي ${matchedParts.length.toLocaleString('ar-EG')} قطعة مطابقة. يرجى تخصيص البحث لرؤية نتائج أدق.
+                            </td>
+                        </tr>
+                    `;
+                }
+            } else {
+                resultsBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="no-results">
+                            عذراً، لم يتم العثور على قطعة مطابقة لـ "<strong>${query}</strong>". <br>
+                            يرجى التأكد من الرقم أو التواصل مباشرة مع الفرع.
+                        </td>
+                    </tr>
+                `;
+            }
+
+            resultsContainer.style.display = 'block';
+        }
+
+        // تشغيل البحث عند الضغط على Enter
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                executeSearch();
+            }
+        }
+    </script>
+</body>
+</html>
